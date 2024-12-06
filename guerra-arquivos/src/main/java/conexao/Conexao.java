@@ -8,6 +8,7 @@ public class Conexao {
 
     static JSch jsch = new JSch();
     static Session session;
+    static final int porta = 22;
 
     public static void main(String[] args) {
         List<UserConnection> userConnections = Arrays.asList(
