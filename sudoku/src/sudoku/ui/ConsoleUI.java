@@ -15,6 +15,7 @@ public class ConsoleUI {
     }
 
     public void startGame() {
+        sudokuGrid.generateRandomBoard(); // Gera o tabuleiro aleatório
         while (true) {
             printGrid();
             if (sudokuGrid.isComplete()) {

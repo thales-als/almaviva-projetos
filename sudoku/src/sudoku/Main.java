@@ -1,14 +1,15 @@
 package sudoku;
 
-import sudoku.model.SudokuGrid;
 import sudoku.ui.ConsoleUI;
+import sudoku.model.SudokuGrid;
 
 public class Main {
     public static void main(String[] args) {
-        SudokuGrid grid = new SudokuGrid();
-        grid.initializeSampleGrid(); // Preenche com um exemplo para jogar/testar
+        // Criação do tabuleiro de Sudoku
+        SudokuGrid sudokuGrid = new SudokuGrid();
 
-        ConsoleUI consoleUI = new ConsoleUI(grid);
+        // Criação da interface de usuário do console e início do jogo
+        ConsoleUI consoleUI = new ConsoleUI(sudokuGrid);
         consoleUI.startGame();
     }
 }

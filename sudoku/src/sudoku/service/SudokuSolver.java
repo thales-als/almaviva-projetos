@@ -14,13 +14,13 @@ public class SudokuSolver {
                             if (solve(sudokuGrid)) {
                                 return true;
                             }
-                            grid[row][col] = 0; // Backtrack
+                            grid[row][col] = 0;
                         }
                     }
-                    return false; // Nenhum valor válido encontrado
+                    return false;
                 }
             }
         }
-        return true; // Sudoku resolvido
+        return true;
     }
 }
