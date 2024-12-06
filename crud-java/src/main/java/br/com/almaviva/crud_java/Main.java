@@ -15,9 +15,9 @@ public class Main {
 
     public static void main(String[] args) throws IOException {
         Scanner scanner = new Scanner(System.in);
-        boolean running = true;
+        boolean isRunning = true;
 
-        while (running) {
+        while (isRunning) {
             System.out.println("===== Gerenciador de Jogos =====");
             System.out.println("1. Adicionar Jogo");
             System.out.println("2. Listar Todos os Jogos");
@@ -37,7 +37,7 @@ public class Main {
                 case 4 -> atualizarJogo(scanner);
                 case 5 -> removerJogo(scanner);
                 case 6 -> {
-                    running = false;
+                    isRunning = false;
                     System.out.println("Encerrando o programa...");
                 }
                 default -> System.out.println("Opção inválida. Tente novamente.");
