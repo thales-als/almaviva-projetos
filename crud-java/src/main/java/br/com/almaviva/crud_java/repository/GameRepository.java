@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Optional;
 
 public class GameRepository {
-    private final File file = new File("/opt/dev/projects/almaviva-projetos/crud-java/src/main/resources/games.txt");
+    private final File file = new File("/opt/dev/projects/github-personal/almaviva-projetos/crud-java/src/main/resources/games.txt");
 
     public List<Game> findAll() throws IOException {
         if (!file.exists()) {
