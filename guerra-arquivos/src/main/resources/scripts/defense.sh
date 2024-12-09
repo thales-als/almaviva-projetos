@@ -1,18 +1,16 @@
 #!/bin/bash
 
-monitored_dir="./thales"
+monitored_dir="/home/thales-almaviva/GuerraArquivos/"
 
 mkdir -p "$monitored_dir"
 
 echo "Monitoring directory: $monitored_dir"
 
 while true; do
-  for file in "$monitored_dir"/*; do
-    if [[ -f "$file" ]]; then
-      echo "Deleting file: $file"
-      rm -f "$file"
+  for item in "$monitored_dir"/*; do
+    if [[ -e "$item" ]]; then
+      echo "Deleting: $item"
+      rm -rf "$item"
     fi
   done
-
-  sleep 0.1
 done

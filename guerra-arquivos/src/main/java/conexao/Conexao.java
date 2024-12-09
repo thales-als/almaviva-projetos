@@ -12,14 +12,25 @@ public class Conexao {
 
     public static void main(String[] args) {
         List<UserConnection> userConnections = Arrays.asList(
-                new UserConnection("thalesvm", "localhost", "2203", 2222)
+//                new UserConnection("almaviva-linux", "192.168.208.90", "C4liforni4!", porta), // Roberto
+//                new UserConnection("almaviva-linux", "192.168.208.79", "renato@1234", porta), // João
+//                new UserConnection("matheus", "192.168.208.49", "magna@123", porta), // Matheus
+//                new UserConnection("almaviva-linux", "192.168.208.46", "Almaviva04092004", porta), // Leonardo
+                new UserConnection("almaviva", "192.168.208.53", "magna@123", porta) // Guilherme
+
+//                new UserConnection("almaviva-linux", "192.168.208.79", "renato@1234", porta), // Renato
+//                new UserConnection("almaviva-linux", "192.168.208.73", "magna@123", porta), // Gustavo
+//                new UserConnection("almaviva-linux", "192.168.208.101", "Magna@123", porta), // Eric
+//                new UserConnection("vitor", "192.168.208.95", "vito@123!", porta) // Victor
+
         );
 
         for (UserConnection user : userConnections) {
             connectToUser(user);
-            sendFileToUser("/opt/dev/projects/almaviva-projetos/guerra-arquivos/src/main/resources/scripts/attack_*.sh", "/home/" + user.getUsername() + "/");
-            runCommandOnUser("chmod +x /home/" + user.getUsername() + "/attack.sh");
-            runCommandOnUser("cd /home/" + user.getUsername() + " && ./attack.sh");
+            String remoteDirectory = "/home/" + user.getUsername() + "/GuerraArquivos/";
+            sendFileToUser("/opt/dev/projects/github-personal/almaviva-projetos/guerra-arquivos/src/main/resources/scripts/attack.sh", remoteDirectory);
+            runCommandOnUser("chmod +x " + remoteDirectory + "attack.sh");
+            runCommandOnUser("cd " + remoteDirectory + " && ./attack.sh");
             disconnectFromUser();
         }
     }
