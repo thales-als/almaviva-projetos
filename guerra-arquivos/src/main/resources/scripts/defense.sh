@@ -6,11 +6,6 @@ mkdir -p "$monitored_dir"
 
 echo "Monitoring directory: $monitored_dir"
 
-while true; do
-  for item in "$monitored_dir"/*; do
-    if [[ -e "$item" ]]; then
-      echo "Deleting: $item"
-      rm -rf "$item"
-    fi
-  done
+inotifywait -m -r -e create,delete,modify "$monitored_dir" | while read -r path _ file; do
+  find "$monitored_dir" -mindepth 1 -delete
 done
