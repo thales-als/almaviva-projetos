@@ -1,35 +1,37 @@
 package main.java.br.com.almaviva.crud_java.controller;
 
+import main.java.br.com.almaviva.crud_java.dto.GameDto;
 import main.java.br.com.almaviva.crud_java.model.Game;
-import main.java.br.com.almaviva.crud_java.repository.GameRepository;
+import main.java.br.com.almaviva.crud_java.service.GameService;
 
 import java.io.IOException;
-import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
 public class GameController {
-    private final GameRepository repository = new GameRepository();
+    private final GameService service;
 
-    public void createGame(String title, String genre, String platform, LocalDate releaseDate, String developer) throws IOException {
-        int newId = repository.findAll().size() + 1;
-        Game game = new Game(newId, title, genre, platform, releaseDate, developer);
-        repository.save(game);
+    public GameController(GameService service) {
+        this.service = service;
+    }
+
+    public void createGame(GameDto dto) throws IOException {
+        service.saveGame(dto);
     }
 
     public List<Game> getAllGames() throws IOException {
-        return repository.findAll();
+        return service.findAllGames();
     }
 
     public Optional<Game> getGameById(int id) throws IOException {
-        return repository.findById(id);
+        return service.findGameById(id);
     }
 
-    public void updateGame(Game updatedGame) throws IOException {
-        repository.update(updatedGame);
+    public void updateGame(int id, GameDto dto) throws IOException {
+        service.updateGame(id, dto);
     }
 
     public void deleteGame(int id) throws IOException {
-        repository.delete(id);
+        service.deleteGame(id);
     }
 }

@@ -1,158 +1,192 @@
 package main.java.br.com.almaviva.crud_java;
 
 import main.java.br.com.almaviva.crud_java.controller.GameController;
+import main.java.br.com.almaviva.crud_java.dto.GameDto;
 import main.java.br.com.almaviva.crud_java.model.Game;
+import main.java.br.com.almaviva.crud_java.repository.GameRepository;
+import main.java.br.com.almaviva.crud_java.service.GameService;
 
 import java.io.IOException;
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeParseException;
+import java.util.List;
+import java.util.Optional;
 import java.util.Scanner;
 
 public class Main {
+    private static final Scanner scanner = new Scanner(System.in);
+    private static final GameRepository repository = new GameRepository();
+    private static final GameService service = new GameService(repository);
+    private static final GameController controller = new GameController(service);
 
-    static GameController controller = new GameController();
-
-    public static void main(String[] args) throws IOException {
-        Scanner scanner = new Scanner(System.in);
-        boolean isRunning = true;
-
-        while (isRunning) {
-            System.out.println("===== Gerenciador de Jogos =====");
-            System.out.println("1. Adicionar Jogo");
-            System.out.println("2. Listar Todos os Jogos");
-            System.out.println("3. Busca por ID");
-            System.out.println("4. Atualizar Jogo");
-            System.out.println("5. Remover Jogo");
-            System.out.println("6. Sair");
-            System.out.print("Escolha uma opção: ");
-
-            int opcao = scanner.nextInt();
-            scanner.nextLine(); // Consumir a quebra de linha
-
-            switch (opcao) {
-                case 1 -> adicionarJogo(scanner);
-                case 2 -> listarJogos();
-                case 3 -> listarJogoPorId(scanner);
-                case 4 -> atualizarJogo(scanner);
-                case 5 -> removerJogo(scanner);
-                case 6 -> {
-                    isRunning = false;
-                    System.out.println("Encerrando o programa...");
-                }
-                default -> System.out.println("Opção inválida. Tente novamente.");
-            }
-        }
-
-        scanner.close();
+    public static void main(String[] args) {
+        int option;
+        do {
+            printMenu();
+            option = getUserOption();
+            processOption(option);
+        } while (option != 6);
     }
 
-    private static void adicionarJogo(Scanner scanner) throws IOException {
-        System.out.println("=== Adicionar Jogo ===");
-        System.out.print("Título: ");
-        String title = scanner.nextLine();
-        System.out.print("Gênero: ");
-        String genre = scanner.nextLine();
-        System.out.print("Plataforma: ");
-        String platform = scanner.nextLine();
-
-        LocalDate releaseDate = null;
-        boolean dataValida = false;
-
-        releaseDate = getReleaseDate(dataValida, "Data de Lançamento (yyyy-MM-dd): ", scanner, releaseDate);
-
-        System.out.print("Desenvolvedora: ");
-        String developer = scanner.nextLine();
-
-        controller.createGame(title, genre, platform, releaseDate, developer);
-
-        System.out.println("Jogo adicionado: " + title);
+    private static void printMenu() {
+        System.out.println("\n-----------------------------------");
+        System.out.println("           CRUD de Jogos           ");
+        System.out.println("-----------------------------------");
+        System.out.println("1. Criar um novo jogo");
+        System.out.println("2. Listar todos os jogos");
+        System.out.println("3. Buscar jogo por ID");
+        System.out.println("4. Atualizar um jogo");
+        System.out.println("5. Excluir um jogo");
+        System.out.println("6. Sair");
+        System.out.print("Escolha uma opção: ");
     }
 
-    private static void listarJogos() throws IOException {
-        System.out.println("=== Lista de Jogos ===");
-        var games = controller.getAllGames();
-        if (games.isEmpty()) {
-            System.out.println("Nenhum jogo encontrado.");
-        } else {
-            games.forEach(System.out::println);
-        }
-    }
-
-    private static void listarJogoPorId(Scanner scanner) throws IOException {
-        System.out.println("=== Busca por ID ===");
-        System.out.print("Digite o ID do jogo que quer buscar: ");
-        int idGame = scanner.nextInt();
-        scanner.nextLine(); // Consumir a quebra de linha
-
-        var game = controller.getGameById(idGame);
-        game.ifPresentOrElse(
-                System.out::println,
-                () -> System.out.println("Jogo não encontrado.")
-        );
-    }
-
-    private static void atualizarJogo(Scanner scanner) throws IOException {
-        System.out.println("=== Atualizar Jogo ===");
-        System.out.print("ID do jogo a atualizar: ");
-        int id = scanner.nextInt();
-        scanner.nextLine(); // Consumir a quebra de linha
-
-        var gameOptional = controller.getGameById(id);
-        if (gameOptional.isEmpty()) {
-            System.out.println("Jogo não encontrado.");
-            return;
-        }
-
-        System.out.print("Novo Título: ");
-        String newTitle = scanner.nextLine();
-        System.out.print("Novo Gênero: ");
-        String newGenre = scanner.nextLine();
-        System.out.print("Nova Plataforma: ");
-        String newPlatform = scanner.nextLine();
-
-        LocalDate newReleaseDate = null;
-        boolean dataValida = false;
-
-        newReleaseDate = getReleaseDate(dataValida, "Nova Data de Lançamento (yyyy-MM-dd): ", scanner, newReleaseDate);
-
-        System.out.print("Novo Desenvolvedor: ");
-        String newDeveloper = scanner.nextLine();
-
-        Game updatedGame = new Game(id, newTitle, newGenre, newPlatform, newReleaseDate, newDeveloper);
-        controller.updateGame(updatedGame);
-
-        System.out.println("Jogo atualizado: " + id);
-    }
-
-    private static void removerJogo(Scanner scanner) throws IOException {
-        System.out.println("=== Remover Jogo ===");
-        System.out.print("ID do jogo a remover: ");
-        int id = scanner.nextInt();
-        scanner.nextLine(); // Consumir a quebra de linha
-
-        var gameOptional = controller.getGameById(id);
-        if (gameOptional.isEmpty()) {
-            System.out.println("Jogo não encontrado.");
-            return;
-        }
-
-        controller.deleteGame(id);
-        System.out.println("Jogo removido: " + id);
-    }
-
-    private static LocalDate getReleaseDate(boolean dataValida, String s, Scanner scanner, LocalDate releaseDate) {
-        while (!dataValida) {
-            System.out.print(s);
-            String dateInput = scanner.nextLine();
-
+    private static int getUserOption() {
+        while (true) {
             try {
-                releaseDate = LocalDate.parse(dateInput, DateTimeFormatter.ISO_LOCAL_DATE);
-                dataValida = true;
-            } catch (DateTimeParseException e) {
-                System.out.println("Data inválida. Certifique-se de usar o formato yyyy-MM-dd");
+                int option = Integer.parseInt(scanner.nextLine());
+                if (option >= 1 && option <= 6) {
+                    return option;
+                } else {
+                    System.out.print("Opção inválida. Tente novamente: ");
+                }
+            } catch (NumberFormatException e) {
+                System.out.print("Entrada inválida. Digite um número de 1 a 6: ");
             }
         }
-        return releaseDate;
+    }
+
+    private static void processOption(int option) {
+        switch (option) {
+            case 1:
+                createGame();
+                break;
+            case 2:
+                listGames();
+                break;
+            case 3:
+                findGameById();
+                break;
+            case 4:
+                updateGame();
+                break;
+            case 5:
+                deleteGame();
+                break;
+            case 6:
+                System.out.println("Saindo... Até logo!");
+                break;
+        }
+    }
+
+    private static void createGame() {
+        try {
+            System.out.print("\nDigite o título do jogo: ");
+            String title = scanner.nextLine();
+            System.out.print("Digite o gênero do jogo: ");
+            String genre = scanner.nextLine();
+            System.out.print("Digite a plataforma do jogo: ");
+            String platform = scanner.nextLine();
+            System.out.print("Digite a data de lançamento (formato YYYY-MM-DD): ");
+            LocalDate releaseDate = LocalDate.parse(scanner.nextLine());
+            System.out.print("Digite o desenvolvedor do jogo: ");
+            String developer = scanner.nextLine();
+
+            GameDto gameDto = new GameDto(title, genre, platform, releaseDate, developer);
+            controller.createGame(gameDto);
+
+            System.out.println("Jogo criado com sucesso!");
+
+        } catch (Exception e) {
+            System.out.println("Erro ao criar o jogo: " + e.getMessage());
+        }
+    }
+
+    private static void listGames() {
+        try {
+            List<Game> games = controller.getAllGames();
+            if (games.isEmpty()) {
+                System.out.println("Nenhum jogo cadastrado.");
+            } else {
+                System.out.println("\nLista de Jogos:");
+                games.forEach(game -> System.out.println(game));
+            }
+        } catch (IOException e) {
+            System.out.println("Erro ao listar jogos: " + e.getMessage());
+        }
+    }
+
+    private static void findGameById() {
+        try {
+            System.out.print("\nDigite o ID do jogo a ser buscado: ");
+            int id = Integer.parseInt(scanner.nextLine());
+
+            Optional<Game> gameOpt = controller.getGameById(id);
+            if (gameOpt.isPresent()) {
+                System.out.println("Jogo encontrado: " + gameOpt.get());
+            } else {
+                System.out.println("Jogo não encontrado!");
+            }
+        } catch (IOException e) {
+            System.out.println("Erro ao buscar o jogo: " + e.getMessage());
+        }
+    }
+
+    private static void updateGame() {
+        try {
+            System.out.print("\nDigite o ID do jogo a ser atualizado: ");
+            int id = Integer.parseInt(scanner.nextLine());
+
+            Optional<Game> gameOpt = controller.getGameById(id);
+            if (gameOpt.isPresent()) {
+                Game game = gameOpt.get();
+                System.out.println("Jogo encontrado: " + game);
+
+                System.out.print("Digite o novo título (deixe em branco para manter o atual): ");
+                String title = scanner.nextLine();
+                if (title.isEmpty()) title = game.title();
+
+                System.out.print("Digite o novo gênero (deixe em branco para manter o atual): ");
+                String genre = scanner.nextLine();
+                if (genre.isEmpty()) genre = game.genre();
+
+                System.out.print("Digite a nova plataforma (deixe em branco para manter a atual): ");
+                String platform = scanner.nextLine();
+                if (platform.isEmpty()) platform = game.platform();
+
+                System.out.print("Digite a nova data de lançamento (formato YYYY-MM-DD ou deixe em branco para manter a atual): ");
+                String releaseDateStr = scanner.nextLine();
+                LocalDate releaseDate = releaseDateStr.isEmpty() ? game.releaseDate() : LocalDate.parse(releaseDateStr);
+
+                System.out.print("Digite o novo desenvolvedor (deixe em branco para manter o atual): ");
+                String developer = scanner.nextLine();
+                if (developer.isEmpty()) developer = game.developer();
+
+                GameDto updatedGame = new GameDto(title, genre, platform, releaseDate, developer);
+                controller.updateGame(id, updatedGame);
+
+                System.out.println("Jogo atualizado com sucesso!");
+            } else {
+                System.out.println("Jogo não encontrado!");
+            }
+        } catch (IOException e) {
+            System.out.println("Erro ao atualizar o jogo: " + e.getMessage());
+        }
+    }
+
+    private static void deleteGame() {
+        try {
+            System.out.print("\nDigite o ID do jogo a ser excluído: ");
+            int id = Integer.parseInt(scanner.nextLine());
+
+            Optional<Game> gameOpt = controller.getGameById(id);
+            if (gameOpt.isPresent()) {
+                controller.deleteGame(id);
+                System.out.println("Jogo excluído com sucesso!");
+            } else {
+                System.out.println("Jogo não encontrado!");
+            }
+        } catch (IOException e) {
+            System.out.println("Erro ao excluir o jogo: " + e.getMessage());
+        }
     }
 }
