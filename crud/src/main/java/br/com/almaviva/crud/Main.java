@@ -55,7 +55,7 @@ public class Main {
         String genre = scanner.nextLine();
         System.out.print("Plataforma: ");
         String platform = scanner.nextLine();
-        System.out.print("Data de lançamento (YYYY-MM-DD): ");
+        System.out.print("Data de lançamento (DD/MM/YYYY): ");
         String releaseDate = scanner.nextLine();
         System.out.print("Desenvolvedor: ");
         String developer = scanner.nextLine();
