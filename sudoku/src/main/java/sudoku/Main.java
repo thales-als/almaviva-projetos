@@ -2,14 +2,14 @@ package sudoku;
 
 import java.util.Scanner;
 
-import sudoku.game.Game;
+import sudoku.game.ConsoleUI;
+import sudoku.game.SudokuGrid;
 
-import static sudoku.utils.AudioThreadInit.threadInit;
+import static sudoku.utils.AudioThread.threadInit;
 import static sudoku.utils.ClearConsole.clear;
 import static sudoku.utils.PrintCentered.printCenteredText;
 import static sudoku.utils.PathsAndData.*;
 import static sudoku.leaderboards.LeaderboardsDisplay.printLBMenu;
-import static sudoku.game.Game.*;
 
 public class Main {
 
@@ -68,8 +68,9 @@ public class Main {
     }
 
     private static void startNewGame() {
-        Game gameExecutor = new Game();
-        gameExecutor.executeGame();
+        SudokuGrid sudokuGrid = new SudokuGrid();
+        ConsoleUI consoleUI = new ConsoleUI(sudokuGrid);
+        consoleUI.startGame();
     }
 
     private static void exitGame() {
