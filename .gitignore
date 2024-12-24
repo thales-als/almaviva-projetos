@@ -1,0 +1,42 @@
+# Arquivos de compilação do Maven
+target/
+!.mvn/wrapper/maven-wrapper.jar
+
+# Arquivos do Eclipse
+.project
+.classpath
+.settings/
+
+# Arquivos do IntelliJ IDEA
+.idea/
+*.iml
+
+# Arquivos de compilação do Gradle
+.gradle/
+build/
+
+# Arquivos temporários
+*.log
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# Diretórios do sistema operacional
+.vscode/
+.vscode-test/
+
+# Dependências do Maven (não commitá-las)
+*.jar
+*.war
+*.ear
+
+# Diretórios de teste
+test-outputs/
+
+# Arquivos específicos do sistema
+*.bak
+*.tmp
+*.orig
+

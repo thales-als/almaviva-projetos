@@ -1,82 +1,82 @@
 package sudoku;
 
-import java.io.Console;
-import javax.sound.sampled.AudioSystem;
-import javax.sound.sampled.Clip;
-import java.io.File;
+import java.util.Scanner;
+
+import sudoku.game.Game;
+
+import static sudoku.utils.AudioThreadInit.threadInit;
+import static sudoku.utils.ClearConsole.clear;
+import static sudoku.utils.PrintCentered.printCenteredText;
+import static sudoku.utils.PathsAndData.*;
+import static sudoku.leaderboards.LeaderboardsDisplay.printLBMenu;
+import static sudoku.game.Game.*;
 
 public class Main {
 
+    private static final String[] MENU_OPTIONS = {
+        "1. Novo Jogo", 
+        "2. Placar de líderes", 
+        "3. Sair do jogo"
+    };
+
+    private static final Scanner sc = new Scanner(System.in);
+
     public static void main(String[] args) {
-        // Limpar a tela e alterar o fundo para preto
-        System.out.print("\033[H\033[2J"); // Limpar a tela
-        System.out.flush();
-        System.out.print("\033[40m"); // Fundo preto
+        clear();
+        printCenteredText(MAIN_MENU_LOGO.getString());
+        printMenuOptions();
+        threadInit(MENU_ANNOUNCER.getString());
 
-        // Texto do logo
-        String logo = " "
-        + " ▗▄▄▖▗▖ ▗▖▗▄▄▖ ▗▄▄▄▖▗▄▄▖      ▗▄▄▖▗▖ ▗▖▗▄▄▄   ▗▄▖ ▗▖ ▗▖▗▖ ▗▖\n"
-        + "▐▌   ▐▌ ▐▌▐▌ ▐▌▐▌   ▐▌ ▐▌    ▐▌   ▐▌ ▐▌▐▌  █ ▐▌ ▐▌▐▌▗▞▘▐▌ ▐▌\n"
-        + " ▝▀▚▖▐▌ ▐▌▐▛▀▘ ▐▛▀▀▘▐▛▀▚▖     ▝▀▚▖▐▌ ▐▌▐▌  █ ▐▌ ▐▌▐▛▚▖ ▐▌ ▐▌\n"
-        + "▗▄▄▞▘▝▚▄▞▘▐▌   ▐▙▄▄▖▐▌ ▐▌    ▗▄▄▞▘▝▚▄▞▘▐▙▄▄▀ ▝▚▄▞▘▐▌ ▐▌▝▚▄▞▘\n";
+        int option;
+        
+        do {
+            option = getUserInput();
+            handleUserSelection(option);
+        } while (option != 3);
+    }
 
-        // Texto do menu
-        String[] menuOptions = {"New Game", "Leaderboards", "Quit Game"};
-
-        // Dimensões do terminal (definidas estaticamente para simplificar)
-        int terminalWidth = 80;
-        int terminalHeight = 24;
-
-        // Centralizar o logo e o menu
-        int totalContentHeight = logo.split("\\n").length + menuOptions.length + 2;
-        int paddingTop = (terminalHeight - totalContentHeight) / 2;
-
-        // Exibir espaço superior
-        for (int i = 0; i < paddingTop; i++) {
-            System.out.println();
+    private static void printMenuOptions() {
+        for (String option : MENU_OPTIONS) {
+            printCenteredText("\n" + option);
         }
+        
+        printCenteredText("\nEscolha a opção desejada: ");
+    }
 
-        // Exibir logo
-        for (String line : logo.split("\\n")) {
-            System.out.println(centerText(line, terminalWidth));
+    private static int getUserInput() {
+        while (!sc.hasNextInt()) {
+            sc.next();
+            printCenteredText("Entrada inválida! Tente novamente.");
         }
+        return sc.nextInt();
+    }
 
-        // Espaço entre logo e menu
-        System.out.println();
-
-        // Exibir menu
-        for (String option : menuOptions) {
-            System.out.println(centerText(option, terminalWidth));
-        }
-
-        // Resetar cor de fundo
-        System.out.print("\033[0m");
-
-        // Reproduzir som após 0,5 segundo
-        try {
-            Thread.sleep(250); // Delay de 0,5 segundo
-            playSound("/opt/dev/projects/github-personal/almaviva-projetos/sudoku/src/main/resources/announcer.wav");
-        } catch (Exception e) {
-            System.err.println("Erro ao reproduzir som: " + e.getMessage());
+    private static void handleUserSelection(int option) {
+        switch (option) {
+            case 1:
+                startNewGame();
+                break;
+            case 2:
+                printLBMenu();
+                break;
+            case 3:
+                exitGame();
+                break;
+            default:
+                printCenteredText("Opção inválida! Tente novamente.");
         }
     }
 
-    private static String centerText(String text, int width) {
-        int padding = (width - text.length()) / 2;
-        if (padding < 0) padding = 0;
-        return " ".repeat(padding) + text;
+    private static void startNewGame() {
+        Game gameExecutor = new Game();
+        gameExecutor.executeGame();
     }
 
-    private static void playSound(String soundFile) {
-        try {
-            File file = new File(soundFile);
-            Clip clip = AudioSystem.getClip();
-            clip.open(AudioSystem.getAudioInputStream(file));
-            clip.start();
-            clip.drain();
-            clip.stop();
-        } catch (Exception e) {
-            System.err.println("Erro ao carregar o som: " + e.getMessage());
-        }
+    private static void exitGame() {
+        System.exit(0);
+    }
+
+    static {
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> sc.close()));
     }
 }
